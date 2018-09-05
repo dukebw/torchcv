@@ -26,7 +26,7 @@ from torchcv.transforms import resize, random_flip, random_paste, random_crop, r
 
 
 parser = argparse.ArgumentParser(description='PyTorch FPNSSD Training')
-parser.add_argument('--lr', default=1e-3, type=float, help='learning rate')
+parser.add_argument('--lr', default=4e-3, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 parser.add_argument('--model', default='./examples/fpnssd/model/fpnssd512_resnet50.pth', type=str, help='initialized model path')
 parser.add_argument('--checkpoint', default='./examples/fpnssd/checkpoint/ckpt.pth', type=str, help='checkpoint path')
@@ -70,8 +70,8 @@ testset = ListDataset(root=args.root/'voc_all_images',
                       list_file='torchcv/datasets/voc/voc07_test.txt',
                       transform=transform_test)
 
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=8, shuffle=True, num_workers=8)
-testloader = torch.utils.data.DataLoader(testset, batch_size=8, shuffle=False, num_workers=8)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=24)
+testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, num_workers=24)
 
 # Model
 print('==> Building model..')
