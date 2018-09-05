@@ -14,7 +14,6 @@ import torchvision
 import torchvision.transforms as transforms
 
 from PIL import Image
-from torch.autograd import Variable
 
 from torchcv.models.fpnssd import FPNSSD512
 from torchcv.models.ssd import SSD300, SSD512, SSDBoxCoder
@@ -35,7 +34,7 @@ args = parser.parse_args()
 print('==> Building model..')
 # net = SSD512(num_classes=21)
 net = FPNSSD512(num_classes=21)
-net.load_state_dict(torch.load(args.model))
+# net.load_state_dict(torch.load(args.model))
 best_loss = float('inf')  # best test loss
 start_epoch = 0  # start from epoch 0 or last epoch
 if args.resume:
@@ -97,9 +96,9 @@ def train(epoch):
     net.train()
     train_loss = 0
     for batch_idx, (inputs, loc_targets, cls_targets) in enumerate(trainloader):
-        inputs = Variable(inputs.cuda())
-        loc_targets = Variable(loc_targets.cuda())
-        cls_targets = Variable(cls_targets.cuda())
+        inputs = inputs.cuda()
+        loc_targets = loc_targets.cuda()
+        cls_targets = cls_targets.cuda()
 
         optimizer.zero_grad()
         loc_preds, cls_preds = net(inputs)
@@ -117,9 +116,9 @@ def test(epoch):
     net.eval()
     test_loss = 0
     for batch_idx, (inputs, loc_targets, cls_targets) in enumerate(testloader):
-        inputs = Variable(inputs.cuda(), volatile=True)
-        loc_targets = Variable(loc_targets.cuda())
-        cls_targets = Variable(cls_targets.cuda())
+        inputs = inputs.cuda()
+        loc_targets = loc_targets.cuda()
+        cls_targets = cls_targets.cuda()
 
         loc_preds, cls_preds = net(inputs)
         loss = criterion(loc_preds, loc_targets, cls_preds, cls_targets)
@@ -145,4 +144,5 @@ def test(epoch):
 
 for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
-    test(epoch)
+    with torch.no_grad():
+        test(epoch)
